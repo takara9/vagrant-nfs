@@ -1,13 +1,13 @@
-- hosts: localhost
+- hosts: nfsserver
   connection: local
-  sudo: yes
+  become: yes
 
   tasks:
     - name: Create export dir
       file: path=/export state=directory mode=777 owner=root group=root
 
     - name: Ensure NFS utilities are installed.
-      apt: name={{ item }} state=installed update_cache=yes
+      apt: name={{ item }} state=present update_cache=yes
       with_items:
         - nfs-common
         - nfs-kernel-server

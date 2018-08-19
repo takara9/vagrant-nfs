@@ -1,0 +1,1 @@
+nfsserver    ansible_connection=local

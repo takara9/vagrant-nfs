@@ -3,21 +3,26 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "ubuntu/xenial64"
+  config.vm.define 'nfsserver' do |machine|
+    machine.vm.box = "ubuntu/xenial64"
+    machine.vm.hostname = 'nfsserver'
+    machine.vm.network :private_network,ip: "172.20.1.10"
+    #machine.vm.network :public_network, ip: "192.168.1.92", bridge: "en0: Ethernet"
+    machine.vm.provider "virtualbox" do |vbox|
+      vbox.gui = false        
+      vbox.cpus = 1
+      vbox.memory = 512
+    end
 
-  config.vm.hostname = "nfsserver"
-  private_ip = "172.16.20.20"
-  config.vm.network "private_network", ip: private_ip
-
-  config.vm.provider "virtualbox" do |vb|
-    vb.gui = false
-    vb.memory = "512"
+    # ノード１ docker & k8sのインストール 
+    #
+    machine.vm.provision "ansible_local" do |ansible|
+      ansible.playbook       = "nfsserver.yml"
+      ansible.version        = "2.6.3"
+      ansible.verbose        = false
+      ansible.install        = true
+      ansible.limit          = "nfsserver"      
+      ansible.inventory_path = "hosts"
+    end
   end
-
-  config.vm.provision "shell", inline: <<-EOF
-apt-get update && apt-get install -y ansible
-ansible-playbook /vagrant/nfsserver.yml
-EOF
-
 end
-
