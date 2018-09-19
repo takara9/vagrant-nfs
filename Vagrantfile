@@ -18,7 +18,7 @@ Vagrant.configure("2") do |config|
     #
     machine.vm.provision "ansible_local" do |ansible|
       ansible.playbook       = "nfsserver.yml"
-      ansible.version        = "2.6.3"
+      ansible.version        = "latest"      
       ansible.verbose        = false
       ansible.install        = true
       ansible.limit          = "nfsserver"      
